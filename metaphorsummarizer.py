@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 import keyboard
 import openai
 import string
+import sounddevice as sd
+import soundfile as sf
+from tkinter import *
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = BarkModel.from_pretrained("suno/bark-small", torch_dtype=torch.float16).to(device)
@@ -189,11 +192,45 @@ def getanswer(question):
     answer = answerq(question, summaries)
     return answer
 
+def Voice_rec():
+	fs = 48000
+	
+	# seconds
+	duration = 10
+	myrecording = sd.rec(int(duration * fs),
+						samplerate=fs, channels=2)
+	sd.wait()
+	
+	# Save as FLAC file at correct sampling rate
+	return sf.write('my_Audio_file.wav', myrecording, fs)
+
 def main():
     print("Press 'Escape' key to exit...")
     while True:
-        question = input("Oh, what can the all powerful eightball answer for you? ")
+        print("Oh, what can the all powerful eightball answer for you? ")
 
+        master = Tk()
+
+        Label(master, text=" Voice Recoder : "
+            ).grid(row=0, sticky=W, rowspan=5)
+
+        def on_close():
+            master.destroy()  # This will close the Tkinter window
+            print("Script continues")
+
+        b = Button(master, text="Start", command=Voice_rec)
+        b.grid(row=0, column=2, columnspan=2, rowspan=2,
+            padx=5, pady=5)
+        close_button = Button(master, text="Close Window", command=on_close)
+        close_button.grid(row=6, column=0, columnspan=4, pady=20)  # Modify the row and column as per your layout
+        mainloop()
+
+
+        audio_file= open(r"C:\Users\lling\Documents\metaphortechnical\my_Audio_file.wav", "rb")
+        question = openai.Audio.transcribe("whisper-1", audio_file)['text']
+
+
+        
         if keyboard.is_pressed('esc'):
             print("Escape key is pressed. Exiting...")
             break
