@@ -33,7 +33,7 @@ openai.api_key = openai_api_key
 openai.Model.list()
 # metaphorkey = os.getenv("metaphorkey")
 
-metaphor = Metaphor("f1ab1016-1795-45ae-9e04-e35caf0e5d48")
+metaphor = Metaphor("apikey")
 
 def scrapeURLs(question):
     # question = "What are the sentiments of climate change in America?"
